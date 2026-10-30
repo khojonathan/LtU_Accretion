@@ -41,6 +41,14 @@ def process_sim(Box, label, subname, sim):
 
     basePath = f"{Filepath}/{Box}/Repositioning/{sim}/{outputpath}/"
 
+    # Simulations without group catalogs yet (e.g. not run) get all-NaN entries
+    if not os.path.isdir(basePath) or not any('groups' in name for name in os.listdir(basePath)):
+        print(f"{Box}/{sim}: No group catalogs in {basePath}, filling with NaNs!", flush = True)
+        data = {name: np.full(len(redshifts), np.nan) for name in
+                ["Masses", "Mdots", "Accretion_growth", "Edd", "HostHaloStellarMasses", "HostHaloSFR"]}
+        data["Progs"] = np.zeros(len(redshifts), dtype=int)
+        return Box, label, subname, data
+
     # Lists per redshift
     Masses = []
     Mdots = []
