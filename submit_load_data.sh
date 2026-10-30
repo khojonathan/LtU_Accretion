@@ -11,9 +11,11 @@
 #SBATCH --mail-user=yja6qa@virginia.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
-# conda init
-while [ "${CONDA_SHLVL:-0}" -gt 0 ]; do conda deactivate; done
-conda activate kho_env
+# Batch shells don't load conda's shell function, so set it up explicitly
+module purge
+module load miniforge
+eval "$(conda shell.bash hook)"
+conda activate kho_env || exit 1
 
 # One thread per worker; load_data_updated.py runs SLURM_CPUS_PER_TASK worker processes
 export OMP_NUM_THREADS=1
