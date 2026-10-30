@@ -11,13 +11,11 @@
 #SBATCH --mail-user=yja6qa@virginia.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
-# Batch shells don't load conda's shell function, so set it up explicitly
-module purge
-module load miniforge
-eval "$(conda shell.bash hook)"
-conda activate kho_env || exit 1
+# Call kho_env's Python directly: conda activate in batch jobs can leave the
+# miniforge module's base Python ahead of the env on PATH
+PYTHON=$HOME/.conda/envs/kho_env/bin/python
 
 # One thread per worker; load_data_updated.py runs SLURM_CPUS_PER_TASK worker processes
 export OMP_NUM_THREADS=1
 
-python load_data_updated.py
+$PYTHON load_data_updated.py
